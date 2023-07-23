@@ -1,8 +1,10 @@
 import re
-import urllib.parse
-import urllib.request
+import requests
 import tkinter as tk
 from tkinter import messagebox
+from urllib.parse import quote
+from unidecode import unidecode
+
 
 def get_weather_data():
     city = selected_city.get()
@@ -10,10 +12,16 @@ def get_weather_data():
         messagebox.showerror("Error", "Please select a city.")
         return
 
-    encoded_city = urllib.parse.quote(city)
 
+    encoded_city = quote(unidecode(city))
     url = f"https://www.havadurumu15gunluk.net/havadurumu/{encoded_city.lower()}-hava-durumu-15-gunluk.html"
-    site = urllib.request.urlopen(url).read().decode('utf-8')
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Check for request errors
+        site = response.text
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("Error", f"Could not fetch weather data for {city}. Please check the city name and try again.")
+        return
 
     r_gunduz = '<td width="45">&nbsp;&nbsp;(-?\d+)°C</td>'
     r_gece = '<td width="45">&nbsp;(-?\d+)°C</td>'
@@ -49,17 +57,18 @@ def get_weather_data():
         aciklama.append(i)
 
     if len(gun) > 0:
-        weather_info = f"Gündüz: {gunduz[0]} °C\nGece: {gece[0]} °C\nAçıklama: {aciklama[0]}"
+        weather_info = f"Gündüz: {gunduz[0]} °C\nGece: {gece[0]} °C\nAçıklama: {city} hava durumu."
         label_result.config(text=weather_info)
     else:
         messagebox.showerror("Error", f"Could not fetch weather data for {city}. Please check the city name and try again.")
 
 
+# List of pre-defined cities with Turkish characters
 cities = [
     "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
     "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa",
     "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Düzce", "Edirne", "Elazığ", "Erzincan", "Erzurum",
-    "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Iğdır", "Isparta", "Istanbul", "Izmir",
+    "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Iğdır", "Isparta", "İstanbul", "İzmir",
     "Kahramanmaraş", "Karabük", "Karaman", "Kars", "Kastamonu", "Kayseri", "Kırıkkale", "Kırklareli", "Kırşehir",
     "Kilis", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Mardin", "Mersin", "Muğla", "Muş", "Nevşehir",
     "Niğde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Şanlıurfa", "Siirt", "Sinop", "Sivas", "Şırnak",
