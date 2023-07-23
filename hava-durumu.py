@@ -17,7 +17,7 @@ def get_weather_data():
     url = f"https://www.havadurumu15gunluk.net/havadurumu/{encoded_city.lower()}-hava-durumu-15-gunluk.html"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Check for request errors
+        response.raise_for_status()
         site = response.text
     except requests.exceptions.RequestException as e:
         messagebox.showerror("Error", f"Could not fetch weather data for {city}. Please check the city name and try again.")
@@ -63,7 +63,7 @@ def get_weather_data():
         messagebox.showerror("Error", f"Could not fetch weather data for {city}. Please check the city name and try again.")
 
 
-# List of pre-defined cities with Turkish characters
+
 cities = [
     "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
     "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa",
@@ -83,7 +83,7 @@ label = tk.Label(text="Hava durumunu öğrenmek istediğiniz şehri seçin.")
 label.pack()
 
 selected_city = tk.StringVar()
-selected_city.set(cities[0])  # Default city
+selected_city.set(cities[0])
 dropdown_city = tk.OptionMenu(window, selected_city, *cities)
 dropdown_city.pack(pady=10)
 
